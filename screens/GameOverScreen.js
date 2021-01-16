@@ -8,7 +8,7 @@ import Colors from '../constants/colors';
 const GameOverScreen = props => {
     return (
         <View style={styles.screen}>
-            <Text style={DefaultStyles.title}>The Game is Over!</Text>
+            <Text style={DefaultStyles.title}>Game Over!</Text>
             <View style={styles.imageContainer}>
                 <Image 
                     source={require('../assets/images/success.png')} 
@@ -17,10 +17,10 @@ const GameOverScreen = props => {
                 />
             </View>
             <Text style={DefaultStyles.bodyText}>
-                Number of rounds: <Text style={styles.highlight}>{props.roundsNumber}</Text>
+                The number of rounds: <Text style={styles.highlight}>{props.roundsNumber}</Text>
             </Text>
             <Text style={DefaultStyles.bodyText}>
-                Number was: <Text style={styles.highlight}>{props.userNumber}</Text>
+                Selected number was: <Text style={styles.highlight}>{props.userNumber}</Text>
             </Text>
             <MainButton onPress={props.onRestart}>NEW GAME</MainButton>
         </View>

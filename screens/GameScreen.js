@@ -46,8 +46,8 @@ const GameScreen = props => {
             (direction === 'lower' && currentGuess < props.userChoice) || 
             (direction === 'greater' && currentGuess > props.userChoice)
             ) {
-                Alert.alert('Don\'t lie!', 'You know that this is wrong...', [
-                    {text: 'Sorry!', style:'cancel'}
+                Alert.alert('Wrong!', 'You know that this is wrong...', [
+                    {text: 'OK', style:'cancel'}
                 ]);
                 return;
         }
@@ -71,6 +71,11 @@ const GameScreen = props => {
         <View style={styles.screen}>
             <Text style={DefaultStyles.title}>Opponent's Guess</Text>
             <NumberContainer>{currentGuess}</NumberContainer>
+            <View style={styles.textContainer}>
+                <Text style={DefaultStyles.bodyText}>
+                    Is the opponent’s guess lower or higher than your selected number? Press the appropriate button to indicate the correct option.
+                </Text>
+            </View>
             <Card style={styles.buttonContainer}>
                 <MainButton onPress={nextGuessHandler.bind(this, 'lower')}>
                     <AntDesign name="down" size={24} color="white" />
@@ -103,6 +108,10 @@ const styles = StyleSheet.create({
         marginTop: 20,
         width: 400,
         maxWidth: '90%'
+    },
+    textContainer: {
+        padding: 20,
+        margin: 10
     },
     listContainer: {
         flex: 1,
