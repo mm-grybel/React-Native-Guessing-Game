@@ -1,5 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, FlatList, Alert, StyleSheet } from 'react-native';
+import { 
+    View, 
+    Text, 
+    FlatList, 
+    Alert, 
+    Dimensions, 
+    StyleSheet } from 'react-native';
 import { AntDesign } from '@expo/vector-icons';
 
 import Card from '../components/Card';
@@ -29,11 +35,26 @@ const GameScreen = props => {
     const initialGuess = generateRandomBetween(1, 100, props.userChoice);
     const [currentGuess, setCurrentGuess] = useState(initialGuess);
     const [pastGuesses, setPastGuesses] = useState([initialGuess.toString()]);
+    const [detectedDeviceWidth, setDetectedDeviceWidth] = useState(Dimensions.get('window').width);
+    const [detectedDeviceHeight, setDetectedDeviceHeight] = useState(Dimensions.get('window').height);
 
     const currentLow = useRef(1);
     const currentHigh = useRef(100);
 
     const { userChoice, onGameOver } = props;
+
+    useEffect(() => {
+        const updateLayout = () => {
+            setDetectedDeviceWidth(Dimensions.get('window').width);
+            setDetectedDeviceHeight(Dimensions.get('window').height);
+        };
+
+        Dimensions.addEventListener('change', updateLayout);
+
+        return () => {
+            Dimensions.removeEventListener('change', updateLayout);
+        };
+    });
 
     useEffect(() => {
         if (currentGuess === userChoice) {
@@ -67,24 +88,50 @@ const GameScreen = props => {
         setPastGuesses(curPastGuesses => [nextNumber.toString(), ...curPastGuesses]);
     };
 
-    return (
-        <View style={styles.screen}>
-            <Text style={DefaultStyles.title}>Opponent's Guess</Text>
+    let listContainerStyle = styles.listContainer;
+
+    let gameControls = (
+        <React.Fragment>
             <NumberContainer>{currentGuess}</NumberContainer>
-            <View style={styles.textContainer}>
-                <Text style={DefaultStyles.bodyText}>
-                    Is the opponent’s guess lower or higher than your selected number? Press the appropriate button to indicate the correct option.
-                </Text>
-            </View>
             <Card style={styles.buttonContainer}>
                 <MainButton onPress={nextGuessHandler.bind(this, 'lower')}>
                     <AntDesign name="down" size={24} color="white" />
-                </MainButton> 
+                </MainButton>
                 <MainButton onPress={nextGuessHandler.bind(this, 'greater')}>
                     <AntDesign name="up" size={24} color="white" />
                 </MainButton>
             </Card>
-            <View style={styles.listContainer}>
+        </React.Fragment>
+    );
+
+    if (detectedDeviceWidth < 350) {
+        listContainerStyle = styles.listContainerBig;
+    }
+
+    if (detectedDeviceHeight < 500 ) {
+        gameControls = (
+            <View style={styles.controls}>
+                <MainButton onPress={nextGuessHandler.bind(this, 'lower')}>
+                    <AntDesign name="down" size={24} color="white" />
+                </MainButton>
+                <NumberContainer>{currentGuess}</NumberContainer>
+                <MainButton onPress={nextGuessHandler.bind(this, 'greater')}>
+                    <AntDesign name="up" size={24} color="white" />
+                </MainButton>
+            </View>
+        );
+    }
+
+    return (
+        <View style={styles.screen}>
+            <Text style={DefaultStyles.title}>Opponent's Guess</Text>
+            <View style={styles.textContainer}>
+                <Text style={DefaultStyles.bodyText}>
+                    Is your selected number lower or higher than the opponent's guess? Press the appropriate button indicate the correct option. 
+                </Text>
+            </View>
+            {gameControls}
+            <View style={listContainerStyle}>
                 <FlatList 
                     keyExtractor={(item) => item}
                     data={pastGuesses} 
@@ -105,7 +152,6 @@ const styles = StyleSheet.create({
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        marginTop: 20,
         width: 400,
         maxWidth: '90%'
     },
@@ -113,9 +159,19 @@ const styles = StyleSheet.create({
         padding: 20,
         margin: 10
     },
+    controls: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        width: '80%'
+    },
     listContainer: {
         flex: 1,
         width: '60%'
+    },
+    listContainerBig: {
+        flex: 1,
+        width: '80%'
     },
     listItem: {
         borderColor: '#ccc',

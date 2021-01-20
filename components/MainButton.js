@@ -1,19 +1,39 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Touchable} from 'react-native';
+import { 
+    View, 
+    Text, 
+    TouchableOpacity, 
+    TouchableNativeFeedback, 
+    Platform,
+    StyleSheet
+} from 'react-native';
 
 import Colors from '../constants/colors';
 
 const MainButton = props => {
+    let ButtonComponent = TouchableOpacity;
+
+    // only Android version 21 or higher supports the ripple effect
+    if (Platform.OS === 'android' && Platform.Version >= 21) {
+        ButtonComponent = TouchableNativeFeedback;
+    }
+
     return (
-        <TouchableOpacity activeOpacity={0.8} onPress={props.onPress}>
-            <View style={styles.button}>
-                <Text style={styles.buttonText}>{props.children}</Text>
-            </View>
-        </TouchableOpacity>
+        <View style={styles.buttonContainter}>
+            <ButtonComponent activeOpacity={0.8} onPress={props.onPress}>
+                <View style={styles.button}>
+                    <Text style={styles.buttonText}>{props.children}</Text>
+                </View>
+            </ButtonComponent>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
+    buttonContainter: {
+        borderRadius: 25,
+        overflow: 'hidden'
+    },
     button: {
         backgroundColor: Colors.primary,
         paddingVertical: 12,
